@@ -81,7 +81,8 @@ public class Chart_White_Balance implements PlugInFilter {
         }
 
         if (chartType == 0) {
-          distance = 6.35;
+          //distance = 6.35;
+            distance = 7.3;  //change to　diagonal distance 
         } else {
           distance = 23.4;
         }
@@ -94,10 +95,10 @@ public class Chart_White_Balance implements PlugInFilter {
 
       //Measure the pixels and extract the RGB values.
       int nrPts = chartValues.length;
-      double[][] chartMeasurements = MeasureChart(imagePixels, poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1], nrPts, w, h);
+      double[][] greyChartValues = MeasureGreyChartsValue(imagePixels, poly.xpoints[0], poly.ypoints[1], poly.xpoints[1], poly.ypoints[1], nrPts, w, h);
 
       //Compute LUT's
-      LUTs = ComputeLUT(chartMeasurements, chartValues);
+      LUTs = ComputeLUT(greyChartValues, chartValues);
     } else {
       IJ.write("Chart White Balance - No patches indicated, loading existing LUT");
       LUTs = LoadLUTs();
@@ -158,12 +159,13 @@ public class Chart_White_Balance implements PlugInFilter {
 
     if (loadLUT == false) {
       //Set the pixel size allowing measurements afterwards.
-      double size = distance / Math.sqrt(Math.pow(poly.xpoints[1] - poly.xpoints[0], 2) + Math.pow(poly.ypoints[1] - poly.ypoints[0], 2));
+      //7.3
+      double pixelSize = distance / Math.sqrt(Math.pow(poly.xpoints[1] - poly.xpoints[0], 2) + Math.pow(poly.ypoints[1] - poly.ypoints[0], 2));
       ij.measure.Calibration cal = imp.getCalibration();
-      cal.pixelHeight = size;
-      cal.pixelWidth = size;
+      cal.pixelHeight = pixelSize;
+      cal.pixelWidth = pixelSize;
       cal.setUnit("cm");
-      IJ.write("Chart White Balance - Resolution is " + 1 / size + " pixels per cm");
+      IJ.write("Chart White Balance - Resolution is " + 1 / pixelSize + " pixels per cm");
     }
 
     imp.repaintWindow();
@@ -173,7 +175,7 @@ public class Chart_White_Balance implements PlugInFilter {
     }
   }
 
-  private static double[][] MeasureChart(int[] imageData, int x1, int y1, int x2, int y2, int nrPts, int imageWidth, int imageHeight) {
+  private static double[][] MeasureGreyChartsValue(int[] imageData, int x1, int y1, int x2, int y2, int nrPts, int imageWidth, int imageHeight) {
     //Measure the pixels and extract the RGB values.
     double[][] chartMeasurements = new double[nrPts][];
     double deltaX = (x2 - x1) / (nrPts - 1);
