@@ -96,7 +96,7 @@ public class Chart_White_Balance implements PlugInFilter {
       //Measure the pixels and extract the RGB values.
       int nrPts = chartValues.length;
       double[][] greyChartValues = MeasureGreyChartsValue(imagePixels, poly.xpoints[0], poly.ypoints[1], poly.xpoints[1], poly.ypoints[1], nrPts, w, h);
-
+      
       //Compute LUT's
       LUTs = ComputeLUT(greyChartValues, chartValues);
     } else {
@@ -169,7 +169,17 @@ public class Chart_White_Balance implements PlugInFilter {
     }
 
     imp.repaintWindow();
-
+    
+    //show calibration result
+    double[][] allRGBValueCalculated = measureAllChartColor(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0], poly.ypoints[1], w, h);
+    for (int i = 0; i < allRGBValueCalculated.length; i++) {
+        System.out.println("no " + (i + 1));
+        for (int j = 0; j < allRGBValueCalculated[i].length; j++) {
+            System.out.print(allRGBValueCalculated[i][j] + " ");
+        }
+        System.out.println(" ");
+    }
+    
     if (saveLUT) {
       SaveLUTs(LUTs);
     }
@@ -192,19 +202,24 @@ public class Chart_White_Balance implements PlugInFilter {
     return chartMeasurements;
   }
   
-  public static double[][] measureAllChartColor(int[] imageData, int x1, int y1, int x2, int y2, int nrPts, int imageWidth, int imageHeight) {
-      nrPts = 24;
-      double[][] chartMeasurements = new double[nrPts][];
-      double deltaX = (x2 - x1) / (nrPts - 1);
-      double deltaY = (y2 - y1) / (nrPts - 1);
+  //accept diagnol coordinates, from top-left to bottom-right
+  //return array with all RGBs of the chart
+  //ps: MeasureGreyChartsValue() returns values after inverse gamma correction, this mothod returns RGBs
+  public static double[][] measureAllChartColor(int[] imageData, int x0, int y0, int x1, int y1, int imageWidth, int imageHeight) {
+      int chartColNum = 6;
+      int chartRowNum = 4;
+      double[][] chartMeasurements = new double[chartColNum * chartRowNum][]; //stores rgb[3]
+      double deltaX = (x1 - x0) / (chartColNum - 1);
+      double deltaY = (y1 - y0) / (chartRowNum - 1);
       double[] rgb;
-      for (int i = 0; i < nrPts; i++) {
-        int x = (int) Math.round(x1 + deltaX * i);
-        int y = (int) Math.round(y1 + deltaY * i);
-        rgb = Util.GetAvgRGB(imageData, x, y, 17, imageWidth, imageHeight);
-        Util.InverseGammaCorrection(rgb, rgb);
-        IJ.write("Chart White Balance - Measuring patch " + i + " at " + x + "," + y + ": " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-        chartMeasurements[i] = rgb;
+      for (int i = 0; i < chartRowNum; i++) {
+          int y = (int) Math.round(y0 + deltaY * i);
+          for (int j = 0; j < chartColNum; j++) {
+              int x = (int) Math.round(x0 + deltaX * j);
+              rgb = Util.GetAvgRGB(imageData, x, y, 17, imageWidth, imageHeight);
+              IJ.write("Chart White Balance - Measuring patch " + i + " at " + x + "," + y + ": " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+              chartMeasurements[i * 6 + j] = rgb;
+          }
       }
       return chartMeasurements;
   }
