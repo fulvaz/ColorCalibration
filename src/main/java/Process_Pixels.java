@@ -182,11 +182,11 @@ public class Process_Pixels implements PlugInFilter {
 		// start ImageJ
 		new ImageJ();
 
-		// open the Clown sample
-		ImagePlus image = IJ.openImage("http://imagej.net/images/clown.jpg");
-		image.show();
-
-		// run the plugin
-		IJ.runPlugIn(clazz.getName(), "");
+//		// open the Clown sample
+//		ImagePlus image = IJ.openImage("http://imagej.net/images/clown.jpg");
+//		image.show();
+//
+//		// run the plugin
+//		IJ.runPlugIn(clazz.getName(), "");
 	}
 }
