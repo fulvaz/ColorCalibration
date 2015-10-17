@@ -16,12 +16,13 @@ import ij.plugin.filter.*;
 import java.io.*;
 
 
+
 // White balance based on black and white patch of color chart
 // Needs a line from the center of black to the center of white before starting the macro
 // Yves Vander Haeghen
 // v1.0, 29 dec. 2008
 // v1.1, 3 jan. 2009: Added support for intermediate gray patches
-public class Chart_White_Balance implements PlugInFilter {
+public class White_Balance2 implements PlugInFilter {
 
   ImagePlus imp;
 
@@ -378,7 +379,7 @@ public class Chart_White_Balance implements PlugInFilter {
   
   public static void main(String[] args) {
       // set the plugins.dir property to make the plugin appear in the Plugins menu
-      Class<?> clazz = Chart_White_Balance.class;
+      Class<?> clazz = White_Balance2.class;
       String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
       System.out.println(clazz.getName());
       System.out.println(url);
