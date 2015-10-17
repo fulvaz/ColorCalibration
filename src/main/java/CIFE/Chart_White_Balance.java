@@ -171,6 +171,7 @@ public class Chart_White_Balance implements PlugInFilter {
     imp.repaintWindow();
     
     //show calibration result
+    System.out.println("here is the calibration result");
     double[][] allRGBValueCalculated = measureAllChartColor(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0], poly.ypoints[1], w, h);
     for (int i = 0; i < allRGBValueCalculated.length; i++) {
         System.out.println("no " + (i + 1));
