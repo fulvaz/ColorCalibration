@@ -21,7 +21,7 @@ import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 
 
-public class Process_Pi implements PlugInFilter {
+public class Curve_FIt_Calibration implements PlugInFilter {
 
     ImagePlus imp;
 
@@ -480,7 +480,7 @@ public class Process_Pi implements PlugInFilter {
 	 */
 	public static void main(String[] args) {
 		// set the plugins.dir property to make the plugin appear in the Plugins menu
-		Class<?> clazz = Process_Pi.class;
+		Class<?> clazz = Curve_FIt_Calibration.class;
 		String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
 		String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
 		System.setProperty("plugins.dir", pluginsDir);
