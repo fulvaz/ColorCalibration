@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
@@ -32,7 +33,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
     private static double distance = 7.3;
     private static int chartRow = 4;
     private static int charColumn = 6;
-    private static int polynomialDegree = 3;
+    private static int polynomialDegree = 2;
     private static boolean plotLUT = true;
 
     public int setup(String arg, ImagePlus imp) {
@@ -78,16 +79,6 @@ public class Curve_FIt_Calibration implements PlugInFilter {
             plot.addPoints(x, b, PlotWindow.LINE);
             plot.setColor(Color.RED);
             plot.show();
-//            PlotWindow pw = new PlotWindow("LUTs", "Input pixel values", "Output pixel value", x, r);
-//            //pw.setLimits(0, 255, 0, 255);
-//            pw.setColor(Color.green);
-//            pw.addPoints(x, g, PlotWindow.LINE);
-//            pw.setColor(Color.blue);
-//            pw.addPoints(x, b, PlotWindow.LINE);
-//            pw.setColor(Color.red);
-//            pw.addPoints(x, r, PlotWindow.LINE);
-//            pw.draw();
-//            pw.setVisible(true);
           }
 
         // Do Image transformation
@@ -97,7 +88,11 @@ public class Curve_FIt_Calibration implements PlugInFilter {
             IJ.showProgress(y, h);
             for (int x = 0; x < w; x++) {
                 Util.DecodeRGB(imagePixels[index], tempRGB);
-                imagePixels[index] = (LUTs[0][tempRGB[0]] << 16) + (LUTs[1][tempRGB[1]] << 8) + LUTs[2][tempRGB[2]];
+                int r = rgbMinMaxFilter(LUTs[0][tempRGB[0]]);
+                int g = rgbMinMaxFilter(LUTs[1][tempRGB[1]]);
+                int b = rgbMinMaxFilter(LUTs[2][tempRGB[2]]);
+                
+                imagePixels[index] = (r << 16) + (g << 8) + b;
                 index++;
             }
         }
@@ -117,16 +112,22 @@ public class Curve_FIt_Calibration implements PlugInFilter {
 //        }
         
 
+        int[] LUT = new int[256];
 
+    }
+    
+    public static int rgbMinMaxFilter(int x) {
+        if (x < 0) return 0;
+        if (x > 255) return 255;
+        return x;
     }
     
     //TODO review
     public static int[] calculateLUT(double[] coefficients) {
+        PolynomialFunction pFunction = new PolynomialFunction(coefficients);
         int[] LUT = new int[256];
         for (int i = 0; i < 256; i++) {
-            for (int j = 0; j <= polynomialDegree; j++) {
-                LUT[i] += (coefficients[j] * Math.pow(i, j));
-            }
+            LUT[i] = (int) pFunction.value(i);
         }
         return LUT;
     }
