@@ -1,19 +1,27 @@
-
 package PFC;
 
-import ij.*;
-import ij.process.*;
-import ij.gui.*;
-import java.awt.*;
-import ij.plugin.filter.*;
-import java.io.*;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Polygon;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
-// Color calibrate using poly fit
+import ij.IJ;
+import ij.ImageJ;
+import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.plugin.filter.PlugInFilter;
+import ij.process.ImageProcessor;
 
-public class PolyFitCalibration implements PlugInFilter {
+
+public class Process_Pi implements PlugInFilter {
 
     ImagePlus imp;
 
@@ -44,7 +52,7 @@ public class PolyFitCalibration implements PlugInFilter {
         double[] RCoefficients = curveFit(rgbFitPoints[0]);
         double[] GCoefficients = curveFit(rgbFitPoints[1]);
         double[] BCoefficients = curveFit(rgbFitPoints[2]);
-        
+        IJ.log("hi~");
 
         // Do Image transformation
 //        int[] tempRGB = new int[3];
@@ -79,79 +87,152 @@ public class PolyFitCalibration implements PlugInFilter {
         final WeightedObservedPoints B = new WeightedObservedPoints();
         //prepare points
         R.add(allRGBValueCalculated[0][0], 115);
-        R.add(allRGBValueCalculated[0][1], 204);
-        R.add(allRGBValueCalculated[0][2], 101);
-        R.add(allRGBValueCalculated[0][3], 89);
-        R.add(allRGBValueCalculated[0][4], 141);
-        R.add(allRGBValueCalculated[0][5], 132);
-        R.add(allRGBValueCalculated[0][6], 249);
-        R.add(allRGBValueCalculated[0][7], 80);
-        R.add(allRGBValueCalculated[0][8], 222);
-        R.add(allRGBValueCalculated[0][9], 91);
-        R.add(allRGBValueCalculated[0][10], 173);
-        R.add(allRGBValueCalculated[0][11], 255);
-        R.add(allRGBValueCalculated[0][12], 44);
-        R.add(allRGBValueCalculated[0][13], 74);
-        R.add(allRGBValueCalculated[0][14], 179);
-        R.add(allRGBValueCalculated[0][15], 250);
-        R.add(allRGBValueCalculated[0][16], 191);
-        R.add(allRGBValueCalculated[0][17], 6);
-        R.add(allRGBValueCalculated[0][18], 252);
-        R.add(allRGBValueCalculated[0][19], 230);
-        R.add(allRGBValueCalculated[0][20], 200);
-        R.add(allRGBValueCalculated[0][21], 143);
-        R.add(allRGBValueCalculated[0][22], 100);
-        R.add(allRGBValueCalculated[0][23], 50);
-        
-        G.add(allRGBValueCalculated[1][0], 82);
+        R.add(allRGBValueCalculated[1][0], 204);
+        R.add(allRGBValueCalculated[2][0], 101);
+        R.add(allRGBValueCalculated[3][0], 89);
+        R.add(allRGBValueCalculated[4][0], 141);
+        R.add(allRGBValueCalculated[5][0], 132);
+        R.add(allRGBValueCalculated[6][0], 249);
+        R.add(allRGBValueCalculated[7][0], 80);
+        R.add(allRGBValueCalculated[8][0], 222);
+        R.add(allRGBValueCalculated[9][0], 91);
+        R.add(allRGBValueCalculated[10][0], 173);
+        R.add(allRGBValueCalculated[11][0], 255);
+        R.add(allRGBValueCalculated[12][0], 44);
+        R.add(allRGBValueCalculated[13][0], 74);
+        R.add(allRGBValueCalculated[14][0], 179);
+        R.add(allRGBValueCalculated[15][0], 250);
+        R.add(allRGBValueCalculated[16][0], 191);
+        R.add(allRGBValueCalculated[17][0], 6);
+        R.add(allRGBValueCalculated[18][0], 252);
+        R.add(allRGBValueCalculated[19][0], 230);
+        R.add(allRGBValueCalculated[20][0], 200);
+        R.add(allRGBValueCalculated[21][0], 143);
+        R.add(allRGBValueCalculated[22][0], 100);
+        R.add(allRGBValueCalculated[23][0], 50);
+
+        G.add(allRGBValueCalculated[0][1], 82);
         G.add(allRGBValueCalculated[1][1], 161);
-        G.add(allRGBValueCalculated[1][2], 134);
-        G.add(allRGBValueCalculated[1][3], 109);
-        G.add(allRGBValueCalculated[1][4], 137);
-        G.add(allRGBValueCalculated[1][5], 228);
-        G.add(allRGBValueCalculated[1][6], 118);
-        G.add(allRGBValueCalculated[1][7], 91);
-        G.add(allRGBValueCalculated[1][8], 91);
-        G.add(allRGBValueCalculated[1][9], 63);
-        G.add(allRGBValueCalculated[1][10], 232);
-        G.add(allRGBValueCalculated[1][11], 164);
-        G.add(allRGBValueCalculated[1][12], 56);
-        G.add(allRGBValueCalculated[1][13], 148);
-        G.add(allRGBValueCalculated[1][14], 42);
-        G.add(allRGBValueCalculated[1][15], 226);
-        G.add(allRGBValueCalculated[1][16], 81);
-        G.add(allRGBValueCalculated[1][17], 142);
-        G.add(allRGBValueCalculated[1][18], 252);
-        G.add(allRGBValueCalculated[1][19], 230);
-        G.add(allRGBValueCalculated[1][20], 200);
-        G.add(allRGBValueCalculated[1][21], 143);
-        G.add(allRGBValueCalculated[1][22], 100);
-        G.add(allRGBValueCalculated[1][23], 50);
-        
-        B.add(allRGBValueCalculated[2][0], 69);
-        B.add(allRGBValueCalculated[2][1], 141);
+        G.add(allRGBValueCalculated[2][1], 134);
+        G.add(allRGBValueCalculated[3][1], 109);
+        G.add(allRGBValueCalculated[4][1], 137);
+        G.add(allRGBValueCalculated[5][1], 228);
+        G.add(allRGBValueCalculated[6][1], 118);
+        G.add(allRGBValueCalculated[7][1], 91);
+        G.add(allRGBValueCalculated[8][1], 91);
+        G.add(allRGBValueCalculated[9][1], 63);
+        G.add(allRGBValueCalculated[10][1], 232);
+        G.add(allRGBValueCalculated[11][1], 164);
+        G.add(allRGBValueCalculated[12][1], 56);
+        G.add(allRGBValueCalculated[13][1], 148);
+        G.add(allRGBValueCalculated[14][1], 42);
+        G.add(allRGBValueCalculated[15][1], 226);
+        G.add(allRGBValueCalculated[16][1], 81);
+        G.add(allRGBValueCalculated[17][1], 142);
+        G.add(allRGBValueCalculated[18][1], 252);
+        G.add(allRGBValueCalculated[19][1], 230);
+        G.add(allRGBValueCalculated[20][1], 200);
+        G.add(allRGBValueCalculated[21][1], 143);
+        G.add(allRGBValueCalculated[22][1], 100);
+        G.add(allRGBValueCalculated[23][1], 50);
+
+        B.add(allRGBValueCalculated[0][2], 69);
+        B.add(allRGBValueCalculated[1][2], 141);
         B.add(allRGBValueCalculated[2][2], 179);
-        B.add(allRGBValueCalculated[2][3], 61);
-        B.add(allRGBValueCalculated[2][4], 194);
-        B.add(allRGBValueCalculated[2][5], 208);
-        B.add(allRGBValueCalculated[2][6], 35);
-        B.add(allRGBValueCalculated[2][7], 182);
-        B.add(allRGBValueCalculated[2][8], 125);
-        B.add(allRGBValueCalculated[2][9], 123);
-        B.add(allRGBValueCalculated[2][10], 91);
-        B.add(allRGBValueCalculated[2][11], 26);
-        B.add(allRGBValueCalculated[2][12], 142);
-        B.add(allRGBValueCalculated[2][13], 81);
-        B.add(allRGBValueCalculated[2][14], 50);
-        B.add(allRGBValueCalculated[2][15], 21);
-        B.add(allRGBValueCalculated[2][16], 160);
-        B.add(allRGBValueCalculated[2][17], 172);
-        B.add(allRGBValueCalculated[2][18], 252);
-        B.add(allRGBValueCalculated[2][19], 230);
-        B.add(allRGBValueCalculated[2][20], 200);
-        B.add(allRGBValueCalculated[2][21], 143);
-        B.add(allRGBValueCalculated[2][22], 100);
-        B.add(allRGBValueCalculated[2][23], 50);
+        B.add(allRGBValueCalculated[3][2], 61);
+        B.add(allRGBValueCalculated[4][2], 194);
+        B.add(allRGBValueCalculated[5][2], 208);
+        B.add(allRGBValueCalculated[6][2], 35);
+        B.add(allRGBValueCalculated[7][2], 182);
+        B.add(allRGBValueCalculated[8][2], 125);
+        B.add(allRGBValueCalculated[9][2], 123);
+        B.add(allRGBValueCalculated[10][2], 91);
+        B.add(allRGBValueCalculated[11][2], 26);
+        B.add(allRGBValueCalculated[12][2], 142);
+        B.add(allRGBValueCalculated[13][2], 81);
+        B.add(allRGBValueCalculated[14][2], 50);
+        B.add(allRGBValueCalculated[15][2], 21);
+        B.add(allRGBValueCalculated[16][2], 160); R.add(allRGBValueCalculated[0][0], 115);
+        R.add(allRGBValueCalculated[1][0], 204);
+        R.add(allRGBValueCalculated[2][0], 101);
+        R.add(allRGBValueCalculated[3][0], 89);
+        R.add(allRGBValueCalculated[4][0], 141);
+        R.add(allRGBValueCalculated[5][0], 132);
+        R.add(allRGBValueCalculated[6][0], 249);
+        R.add(allRGBValueCalculated[7][0], 80);
+        R.add(allRGBValueCalculated[8][0], 222);
+        R.add(allRGBValueCalculated[9][0], 91);
+        R.add(allRGBValueCalculated[10][0], 173);
+        R.add(allRGBValueCalculated[11][0], 255);
+        R.add(allRGBValueCalculated[12][0], 44);
+        R.add(allRGBValueCalculated[13][0], 74);
+        R.add(allRGBValueCalculated[14][0], 179);
+        R.add(allRGBValueCalculated[15][0], 250);
+        R.add(allRGBValueCalculated[16][0], 191);
+        R.add(allRGBValueCalculated[17][0], 6);
+        R.add(allRGBValueCalculated[18][0], 252);
+        R.add(allRGBValueCalculated[19][0], 230);
+        R.add(allRGBValueCalculated[20][0], 200);
+        R.add(allRGBValueCalculated[21][0], 143);
+        R.add(allRGBValueCalculated[22][0], 100);
+        R.add(allRGBValueCalculated[23][0], 50);
+
+        G.add(allRGBValueCalculated[0][1], 82);
+        G.add(allRGBValueCalculated[1][1], 161);
+        G.add(allRGBValueCalculated[2][1], 134);
+        G.add(allRGBValueCalculated[3][1], 109);
+        G.add(allRGBValueCalculated[4][1], 137);
+        G.add(allRGBValueCalculated[5][1], 228);
+        G.add(allRGBValueCalculated[6][1], 118);
+        G.add(allRGBValueCalculated[7][1], 91);
+        G.add(allRGBValueCalculated[8][1], 91);
+        G.add(allRGBValueCalculated[9][1], 63);
+        G.add(allRGBValueCalculated[10][1], 232);
+        G.add(allRGBValueCalculated[11][1], 164);
+        G.add(allRGBValueCalculated[12][1], 56);
+        G.add(allRGBValueCalculated[13][1], 148);
+        G.add(allRGBValueCalculated[14][1], 42);
+        G.add(allRGBValueCalculated[15][1], 226);
+        G.add(allRGBValueCalculated[16][1], 81);
+        G.add(allRGBValueCalculated[17][1], 142);
+        G.add(allRGBValueCalculated[18][1], 252);
+        G.add(allRGBValueCalculated[19][1], 230);
+        G.add(allRGBValueCalculated[20][1], 200);
+        G.add(allRGBValueCalculated[21][1], 143);
+        G.add(allRGBValueCalculated[22][1], 100);
+        G.add(allRGBValueCalculated[23][1], 50);
+
+        B.add(allRGBValueCalculated[0][2], 69);
+        B.add(allRGBValueCalculated[1][2], 141);
+        B.add(allRGBValueCalculated[2][2], 179);
+        B.add(allRGBValueCalculated[3][2], 61);
+        B.add(allRGBValueCalculated[4][2], 194);
+        B.add(allRGBValueCalculated[5][2], 208);
+        B.add(allRGBValueCalculated[6][2], 35);
+        B.add(allRGBValueCalculated[7][2], 182);
+        B.add(allRGBValueCalculated[8][2], 125);
+        B.add(allRGBValueCalculated[9][2], 123);
+        B.add(allRGBValueCalculated[10][2], 91);
+        B.add(allRGBValueCalculated[11][2], 26);
+        B.add(allRGBValueCalculated[12][2], 142);
+        B.add(allRGBValueCalculated[13][2], 81);
+        B.add(allRGBValueCalculated[14][2], 50);
+        B.add(allRGBValueCalculated[15][2], 21);
+        B.add(allRGBValueCalculated[16][2], 160);
+        B.add(allRGBValueCalculated[17][2], 172);
+        B.add(allRGBValueCalculated[18][2], 252);
+        B.add(allRGBValueCalculated[19][2], 230);
+        B.add(allRGBValueCalculated[20][2], 200);
+        B.add(allRGBValueCalculated[21][2], 143);
+        B.add(allRGBValueCalculated[22][2], 100);
+        B.add(allRGBValueCalculated[23][2], 50);
+        B.add(allRGBValueCalculated[17][2], 172);
+        B.add(allRGBValueCalculated[18][2], 252);
+        B.add(allRGBValueCalculated[19][2], 230);
+        B.add(allRGBValueCalculated[20][2], 200);
+        B.add(allRGBValueCalculated[21][2], 143);
+        B.add(allRGBValueCalculated[22][2], 100);
+        B.add(allRGBValueCalculated[23][2], 50);
         
         WeightedObservedPoints[] rgbFitPoints = {R, G, B};
         return rgbFitPoints;
@@ -387,25 +468,31 @@ public class PolyFitCalibration implements PlugInFilter {
         }
     }
 
-    public static void main(String[] args) {
-        // set the plugins.dir property to make the plugin appear in the Plugins
-        // menu
-        Class<?> clazz = PolyFitCalibration.class;
-        String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
-        System.out.println(clazz.getName());
-        System.out.println(url);
-        String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
-        System.out.println(pluginsDir);
-        System.setProperty("plugins.dir", pluginsDir);
+	
 
-        // start ImageJ
-        new ImageJ();
+	/**
+	 * Main method for debugging.
+	 *
+	 * For debugging, it is convenient to have a method that starts ImageJ, loads an
+	 * image and calls the plugin, e.g. after setting breakpoints.
+	 *
+	 * @param args unused
+	 */
+	public static void main(String[] args) {
+		// set the plugins.dir property to make the plugin appear in the Plugins menu
+		Class<?> clazz = Process_Pi.class;
+		String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
+		String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
+		System.setProperty("plugins.dir", pluginsDir);
 
-        // // open the Clown sample
-        // ImagePlus image = IJ.openImage("http://imagej.net/images/clown.jpg");
-        // image.show();a
-        //
-        // // run the plugin
-        // IJ.runPlugIn(clazz.getName(), "");
-    }
+		// start ImageJ
+		new ImageJ();
+
+//		// open the Clown sample
+		ImagePlus image = IJ.openImage("/home/fulva/imagej/resource/IMG_0431.JPG");
+		image.show();
+//
+//		// run the plugin
+//		IJ.runPlugIn(clazz.getName(), "");
+	}
 }
