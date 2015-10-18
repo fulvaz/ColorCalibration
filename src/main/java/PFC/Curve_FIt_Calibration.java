@@ -35,6 +35,12 @@ public class Curve_FIt_Calibration implements PlugInFilter {
     private static int charColumn = 6;
     private static int polynomialDegree = 2;
     private static boolean plotLUT = true;
+    private static double[][] ChartRGBs = {
+            {115, 82, 69}, {204, 161, 141}, {101, 134, 179}, {89, 109, 62}, {141, 137, 194}, {132, 228, 208}, 
+            {249, 118, 35}, {80, 91, 182}, {222, 91, 125}, {91, 63, 123}, {173, 232, 91}, {255, 164, 26}, 
+            {44, 56, 142}, {74, 148, 81}, {179, 42, 50}, {250, 226, 21}, {191, 81, 160}, {6, 142, 172}, 
+            {252, 252, 252}, {230, 230, 230}, {200, 200, 200}, {143, 143, 143}, {100, 100, 100}, {50, 50, 50}
+    };
 
     public int setup(String arg, ImagePlus imp) {
         this.imp = imp;
@@ -65,6 +71,17 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         //draw plot
         if (plotLUT) {
             double[] x = new double[256], r = new double[256], g = new double[256], b = new double[256];
+            double[] measureRX = new double[24], measureGX = new double[24], measureBX = new double[24]; 
+            double[] chartRY = new double[24], chartGY = new double[24], chartBY = new double[24];
+            for (int i = 0; i < 24; i++) {
+                measureRX[i] = allChartValues[i][0];
+                measureGX[i] = allChartValues[i][1];
+                measureBX[i] = allChartValues[i][2];
+                chartRY[i] = ChartRGBs[i][0];
+                chartGY[i] = ChartRGBs[i][1];
+                chartBY[i] = ChartRGBs[i][2];
+            }
+            
             for (int i = 0; i < 256; i++) {
               x[i] = i;
               r[i] = LUTs[0][i];
@@ -72,11 +89,20 @@ public class Curve_FIt_Calibration implements PlugInFilter {
               b[i] = LUTs[2][i];
             }
             Plot plot = new Plot("LUT", "Input", "Output", x, r);
+            //Red 
+            //fitting curve
             plot.addPoints(x, r, PlotWindow.LINE);
+            //points
+            plot.addPoints(measureRX, chartRY, Plot.CROSS);
+            
+            //Green
             plot.setColor(Color.GREEN);
             plot.addPoints(x, g, PlotWindow.LINE);
+            plot.addPoints(measureGX, chartGY, Plot.CROSS);
+            //Blue
             plot.setColor(Color.BLUE);
             plot.addPoints(x, b, PlotWindow.LINE);
+            plot.addPoints(measureBX, chartBY, Plot.CROSS);
             plot.setColor(Color.RED);
             plot.show();
           }
@@ -99,17 +125,17 @@ public class Curve_FIt_Calibration implements PlugInFilter {
 
         imp.repaintWindow();
 
-        // show calibration result
-//        System.out.println("here is the calibration result");
-//        allChartValues = measureAllChartColor(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0],
-//                poly.ypoints[1], w, h);
-//        for (int i = 0; i < allChartValues.length; i++) {
-//            System.out.println("no " + (i + 1));
-//            for (int j = 0; j < allChartValues[i].length; j++) {
-//                System.out.print(allChartValues[i][j] + " ");
-//            }
-//            System.out.println(" ");
-//        }
+        //show calibration result
+        System.out.println("here is the calibration result");
+        allChartValues = measureAllChartColor(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0],
+                poly.ypoints[1], w, h);
+        for (int i = 0; i < allChartValues.length; i++) {
+            System.out.println("no " + (i + 1));
+            for (int j = 0; j < allChartValues[i].length; j++) {
+                System.out.print(allChartValues[i][j] + " ");
+            }
+            System.out.println(" ");
+        }
         
 
         int[] LUT = new int[256];
@@ -130,87 +156,88 @@ public class Curve_FIt_Calibration implements PlugInFilter {
             LUT[i] = (int) pFunction.value(i);
         }
         return LUT;
-    }
+    }        
 
     public static WeightedObservedPoints[] initPoints(double[][] allRGBValueCalculated) {
         final WeightedObservedPoints R = new WeightedObservedPoints();
         final WeightedObservedPoints G = new WeightedObservedPoints();
         final WeightedObservedPoints B = new WeightedObservedPoints();
+
         // prepare points
-        R.add((int)allRGBValueCalculated[0][0], 115);
-        R.add((int)allRGBValueCalculated[1][0], 204);
-        R.add((int)allRGBValueCalculated[2][0], 101);
-        R.add((int)allRGBValueCalculated[3][0], 89);
-        R.add((int)allRGBValueCalculated[4][0], 141);
-        R.add((int)allRGBValueCalculated[5][0], 132);
-        R.add((int)allRGBValueCalculated[6][0], 249);
-        R.add((int)allRGBValueCalculated[7][0], 80);
-        R.add((int)allRGBValueCalculated[8][0], 222);
-        R.add((int)allRGBValueCalculated[9][0], 91);
-        R.add((int)allRGBValueCalculated[10][0], 173);
-        R.add((int)allRGBValueCalculated[11][0], 255);
-        R.add((int)allRGBValueCalculated[12][0], 44);
-        R.add((int)allRGBValueCalculated[13][0], 74);
-        R.add((int)allRGBValueCalculated[14][0], 179);
-        R.add((int)allRGBValueCalculated[15][0], 250);
-        R.add((int)allRGBValueCalculated[16][0], 191);
-        R.add((int)allRGBValueCalculated[17][0], 6);
-        R.add((int)allRGBValueCalculated[18][0], 252);
-        R.add((int)allRGBValueCalculated[19][0], 230);
-        R.add((int)allRGBValueCalculated[20][0], 200);
-        R.add((int)allRGBValueCalculated[21][0], 143);
-        R.add((int)allRGBValueCalculated[22][0], 100);
-        R.add((int)allRGBValueCalculated[23][0], 50);
+        R.add((int)allRGBValueCalculated[0][0], ChartRGBs[0][0]);
+        R.add((int)allRGBValueCalculated[1][0], ChartRGBs[1][0]);
+        R.add((int)allRGBValueCalculated[2][0], ChartRGBs[2][0]);
+        R.add((int)allRGBValueCalculated[3][0], ChartRGBs[3][0]);
+        R.add((int)allRGBValueCalculated[4][0], ChartRGBs[4][0]);
+        R.add((int)allRGBValueCalculated[5][0], ChartRGBs[5][0]);
+        R.add((int)allRGBValueCalculated[6][0], ChartRGBs[6][0]);
+        R.add((int)allRGBValueCalculated[7][0], ChartRGBs[7][0]);
+        R.add((int)allRGBValueCalculated[8][0], ChartRGBs[8][0]);
+        R.add((int)allRGBValueCalculated[9][0], ChartRGBs[9][0]);
+        R.add((int)allRGBValueCalculated[10][0], ChartRGBs[10][0]);
+        R.add((int)allRGBValueCalculated[11][0], ChartRGBs[11][0]);
+        R.add((int)allRGBValueCalculated[12][0], ChartRGBs[12][0]);
+        R.add((int)allRGBValueCalculated[13][0], ChartRGBs[13][0]);
+        R.add((int)allRGBValueCalculated[14][0], ChartRGBs[14][0]);
+        R.add((int)allRGBValueCalculated[15][0], ChartRGBs[15][0]);
+        R.add((int)allRGBValueCalculated[16][0], ChartRGBs[16][0]);
+        R.add((int)allRGBValueCalculated[17][0], ChartRGBs[17][0]);
+        R.add(100, (int)allRGBValueCalculated[18][0], ChartRGBs[18][0]);
+        R.add(100, (int)allRGBValueCalculated[19][0], ChartRGBs[19][0]);
+        R.add(100, (int)allRGBValueCalculated[20][0], ChartRGBs[20][0]);
+        R.add(100, (int)allRGBValueCalculated[21][0], ChartRGBs[21][0]);
+        R.add(100, (int)allRGBValueCalculated[22][0], ChartRGBs[22][0]);
+        R.add(100, (int)allRGBValueCalculated[23][0], ChartRGBs[23][0]);
 
-        G.add((int)allRGBValueCalculated[0][1], 82);
-        G.add((int)allRGBValueCalculated[1][1], 161);
-        G.add((int)allRGBValueCalculated[2][1], 134);
-        G.add((int)allRGBValueCalculated[3][1], 109);
-        G.add((int)allRGBValueCalculated[4][1], 137);
-        G.add((int)allRGBValueCalculated[5][1], 228);
-        G.add((int)allRGBValueCalculated[6][1], 118);
-        G.add((int)allRGBValueCalculated[7][1], 91);
-        G.add((int)allRGBValueCalculated[8][1], 91);
-        G.add((int)allRGBValueCalculated[9][1], 63);
-        G.add((int)allRGBValueCalculated[10][1], 232);
-        G.add((int)allRGBValueCalculated[11][1], 164);
-        G.add((int)allRGBValueCalculated[12][1], 56);
-        G.add((int)allRGBValueCalculated[13][1], 148);
-        G.add((int)allRGBValueCalculated[14][1], 42);
-        G.add((int)allRGBValueCalculated[15][1], 226);
-        G.add((int)allRGBValueCalculated[16][1], 81);
-        G.add((int)allRGBValueCalculated[17][1], 142);
-        G.add((int)allRGBValueCalculated[18][1], 252);
-        G.add((int)allRGBValueCalculated[19][1], 230);
-        G.add((int)allRGBValueCalculated[20][1], 200);
-        G.add((int)allRGBValueCalculated[21][1], 143);
-        G.add((int)allRGBValueCalculated[22][1], 100);
-        G.add((int)allRGBValueCalculated[23][1], 50);
+        G.add((int)allRGBValueCalculated[0][0], ChartRGBs[0][1]);
+        G.add((int)allRGBValueCalculated[1][0], ChartRGBs[1][1]);
+        G.add((int)allRGBValueCalculated[2][0], ChartRGBs[2][1]);
+        G.add((int)allRGBValueCalculated[3][0], ChartRGBs[3][1]);
+        G.add((int)allRGBValueCalculated[4][0], ChartRGBs[4][1]);
+        G.add((int)allRGBValueCalculated[5][0], ChartRGBs[5][1]);
+        G.add((int)allRGBValueCalculated[6][0], ChartRGBs[6][1]);
+        G.add((int)allRGBValueCalculated[7][0], ChartRGBs[7][1]);
+        G.add((int)allRGBValueCalculated[8][0], ChartRGBs[8][1]);
+        G.add((int)allRGBValueCalculated[9][0], ChartRGBs[9][1]);
+        G.add((int)allRGBValueCalculated[10][0], ChartRGBs[10][1]);
+        G.add((int)allRGBValueCalculated[11][0], ChartRGBs[11][1]);
+        G.add((int)allRGBValueCalculated[12][0], ChartRGBs[12][1]);
+        G.add((int)allRGBValueCalculated[13][0], ChartRGBs[13][1]);
+        G.add((int)allRGBValueCalculated[14][0], ChartRGBs[14][1]);
+        G.add((int)allRGBValueCalculated[15][0], ChartRGBs[15][1]);
+        G.add((int)allRGBValueCalculated[16][0], ChartRGBs[16][1]);
+        G.add((int)allRGBValueCalculated[17][0], ChartRGBs[17][1]);
+        G.add(100, (int)allRGBValueCalculated[18][0], ChartRGBs[18][1]);
+        G.add(100, (int)allRGBValueCalculated[19][0], ChartRGBs[19][1]);
+        G.add(100, (int)allRGBValueCalculated[20][0], ChartRGBs[20][1]);
+        G.add(100, (int)allRGBValueCalculated[21][0], ChartRGBs[21][1]);
+        G.add(100, (int)allRGBValueCalculated[22][0], ChartRGBs[22][1]);
+        G.add(100, (int)allRGBValueCalculated[23][0], ChartRGBs[23][1]);
 
-        B.add((int)allRGBValueCalculated[0][2], 69);
-        B.add((int)allRGBValueCalculated[1][2], 141);
-        B.add((int)allRGBValueCalculated[2][2], 179);
-        B.add((int)allRGBValueCalculated[3][2], 61);
-        B.add((int)allRGBValueCalculated[4][2], 194);
-        B.add((int)allRGBValueCalculated[5][2], 208);
-        B.add((int)allRGBValueCalculated[6][2], 35);
-        B.add((int)allRGBValueCalculated[7][2], 182);
-        B.add((int)allRGBValueCalculated[8][2], 125);
-        B.add((int)allRGBValueCalculated[9][2], 123);
-        B.add((int)allRGBValueCalculated[10][2], 91);
-        B.add((int)allRGBValueCalculated[11][2], 26);
-        B.add((int)allRGBValueCalculated[12][2], 142);
-        B.add((int)allRGBValueCalculated[13][2], 81);
-        B.add((int)allRGBValueCalculated[14][2], 50);
-        B.add((int)allRGBValueCalculated[15][2], 21);
-        B.add((int)allRGBValueCalculated[16][2], 160);
-        B.add((int)allRGBValueCalculated[17][2], 172);
-        B.add((int)allRGBValueCalculated[18][2], 252);
-        B.add((int)allRGBValueCalculated[19][2], 230);
-        B.add((int)allRGBValueCalculated[20][2], 200);
-        B.add((int)allRGBValueCalculated[21][2], 143);
-        B.add((int)allRGBValueCalculated[22][2], 100);
-        B.add((int)allRGBValueCalculated[23][2], 50);
+        B.add((int)allRGBValueCalculated[0][0], ChartRGBs[0][2]);
+        B.add((int)allRGBValueCalculated[1][0], ChartRGBs[1][2]);
+        B.add((int)allRGBValueCalculated[2][0], ChartRGBs[2][2]);
+        B.add((int)allRGBValueCalculated[3][0], ChartRGBs[3][2]);
+        B.add((int)allRGBValueCalculated[4][0], ChartRGBs[4][2]);
+        B.add((int)allRGBValueCalculated[5][0], ChartRGBs[5][2]);
+        B.add((int)allRGBValueCalculated[6][0], ChartRGBs[6][2]);
+        B.add((int)allRGBValueCalculated[7][0], ChartRGBs[7][2]);
+        B.add((int)allRGBValueCalculated[8][0], ChartRGBs[8][2]);
+        B.add((int)allRGBValueCalculated[9][0], ChartRGBs[9][2]);
+        B.add((int)allRGBValueCalculated[10][0], ChartRGBs[10][2]);
+        B.add((int)allRGBValueCalculated[11][0], ChartRGBs[11][2]);
+        B.add((int)allRGBValueCalculated[12][0], ChartRGBs[12][2]);
+        B.add((int)allRGBValueCalculated[13][0], ChartRGBs[13][2]);
+        B.add((int)allRGBValueCalculated[14][0], ChartRGBs[14][2]);
+        B.add((int)allRGBValueCalculated[15][0], ChartRGBs[15][2]);
+        B.add((int)allRGBValueCalculated[16][0], ChartRGBs[16][2]);
+        B.add((int)allRGBValueCalculated[17][0], ChartRGBs[17][2]);
+        B.add(100, (int)allRGBValueCalculated[18][0], ChartRGBs[18][2]);
+        B.add(100, (int)allRGBValueCalculated[19][0], ChartRGBs[19][2]);
+        B.add(100, (int)allRGBValueCalculated[20][0], ChartRGBs[20][2]);
+        B.add(100, (int)allRGBValueCalculated[21][0], ChartRGBs[21][2]);
+        B.add(100, (int)allRGBValueCalculated[22][0], ChartRGBs[22][2]);
+        B.add(100, (int)allRGBValueCalculated[23][0], ChartRGBs[23][2]);
 
         WeightedObservedPoints[] rgbFitPoints = { R, G, B };
         return rgbFitPoints;
@@ -410,7 +437,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         new ImageJ();
 
         // // open the Clown sample
-        ImagePlus image = IJ.openImage("/home/fulva/imagej/resource/IMG_0431.JPG");
+        ImagePlus image = IJ.openImage("/home/fulva/imagej/resource/IMG_0433.JPG");
         image.show();
         //
         // // run the plugin
