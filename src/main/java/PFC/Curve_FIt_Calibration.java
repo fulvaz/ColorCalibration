@@ -29,13 +29,13 @@ import ij.process.ImageProcessor;
 public class Curve_FIt_Calibration implements PlugInFilter {
 
     ImagePlus imp;
-    private static int LUTs[][] = new int[3][]; //0 1 2 : R[] G[] B[]
-    private static double distance = 7.3;
-    private static int chartRow = 4;
-    private static int charColumn = 6;
-    private static int polynomialDegree = 2;
-    private static boolean plotLUT = true;
-    private static double[][] ChartRGBs = {
+    private int LUTs[][] = new int[3][]; //0 1 2 : R[] G[] B[]
+    private double distance = 7.3;
+    private int chartRow = 4;
+    private int charColumn = 6;
+    private int polynomialDegree = 3;
+    private boolean plotLUT = true;
+    private double[][] ChartRGBs = {
             {115, 82, 69}, {204, 161, 141}, {101, 134, 179}, {89, 109, 62}, {141, 137, 194}, {132, 228, 208}, 
             {249, 118, 35}, {80, 91, 182}, {222, 91, 125}, {91, 63, 123}, {173, 232, 91}, {255, 164, 26}, 
             {44, 56, 142}, {74, 148, 81}, {179, 42, 50}, {250, 226, 21}, {191, 81, 160}, {6, 142, 172}, 
@@ -88,23 +88,10 @@ public class Curve_FIt_Calibration implements PlugInFilter {
               g[i] = LUTs[1][i];
               b[i] = LUTs[2][i];
             }
-            Plot plot = new Plot("LUT", "Input", "Output", x, r);
-            //Red 
-            //fitting curve
-            plot.addPoints(x, r, PlotWindow.LINE);
-            //points
-            plot.addPoints(measureRX, chartRY, Plot.CROSS);
-            
-            //Green
-            plot.setColor(Color.GREEN);
-            plot.addPoints(x, g, PlotWindow.LINE);
-            plot.addPoints(measureGX, chartGY, Plot.CROSS);
-            //Blue
-            plot.setColor(Color.BLUE);
-            plot.addPoints(x, b, PlotWindow.LINE);
-            plot.addPoints(measureBX, chartBY, Plot.CROSS);
-            plot.setColor(Color.RED);
-            plot.show();
+
+            drawPointCurvePlot(x, b, measureGX, chartBY, Color.blue);
+            drawPointCurvePlot(x, r, measureGX, chartRY, Color.red);  
+            drawPointCurvePlot(x, g, measureGX, chartGY, Color.green);
           }
 
         // Do Image transformation
@@ -141,15 +128,33 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         int[] LUT = new int[256];
 
     }
+
+     /**
+      * @param input: curve inputs
+      * @param output: curve output
+      * ......
+      * */
+    private void drawPointCurvePlot(double[] input, double[] output, double[] measureValue, double[] idealValue) {
+        Plot plot = new Plot("LUTG", "Input", "Output", input, output);
+        plot.addPoints(measureValue, idealValue, Plot.CROSS);
+        plot.show();
+    }
     
-    public static int rgbMinMaxFilter(int x) {
+    private void drawPointCurvePlot(double[] input, double[] output, double[] measureValue, double[] idealValue, Color color) {
+        Plot plot = new Plot("LUTG", "Input", "Output", input, output);
+        plot.setColor(color);
+        plot.addPoints(measureValue, idealValue, Plot.CROSS);
+        plot.show();
+    }
+    
+    public int rgbMinMaxFilter(int x) {
         if (x < 0) return 0;
         if (x > 255) return 255;
         return x;
     }
     
     //TODO review
-    public static int[] calculateLUT(double[] coefficients) {
+    public int[] calculateLUT(double[] coefficients) {
         PolynomialFunction pFunction = new PolynomialFunction(coefficients);
         int[] LUT = new int[256];
         for (int i = 0; i < 256; i++) {
@@ -158,7 +163,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         return LUT;
     }        
 
-    public static WeightedObservedPoints[] initPoints(double[][] allRGBValueCalculated) {
+    public WeightedObservedPoints[] initPoints(double[][] allRGBValueCalculated) {
         final WeightedObservedPoints R = new WeightedObservedPoints();
         final WeightedObservedPoints G = new WeightedObservedPoints();
         final WeightedObservedPoints B = new WeightedObservedPoints();
@@ -243,7 +248,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         return rgbFitPoints;
     }
 
-    public static double[] curveFit(WeightedObservedPoints obs) {
+    public double[] curveFit(WeightedObservedPoints obs) {
         // Collect data.
         // final WeightedObservedPoints obs = new WeightedObservedPoints();
         // obs.add(-1.00, 2.021170021833143);
@@ -261,7 +266,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         return coeff;
     }
 
-    private static double[][] MeasureGreyChartsValue(int[] imageData, int x1, int y1, int x2, int y2, int nrPts,
+    private double[][] MeasureGreyChartsValue(int[] imageData, int x1, int y1, int x2, int y2, int nrPts,
             int imageWidth, int imageHeight) {
         // Measure the pixels and extract the RGB values.
         double[][] chartMeasurements = new double[nrPts][];
@@ -284,7 +289,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
     // return array with all RGBs of the chart
     // ps: MeasureGreyChartsValue() returns values after inverse gamma
     // correction, this mothod returns RGBs
-    public static double[][] measureAllChartColor(int[] imageData, int x0, int y0, int x1, int y1, int imageWidth,
+    public double[][] measureAllChartColor(int[] imageData, int x0, int y0, int x1, int y1, int imageWidth,
             int imageHeight) {
         int chartColNum = 6;
         int chartRowNum = 4;
@@ -306,7 +311,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         return chartMeasurements;
     }
 
-    private static int CheckForSaturation(double[][] x, double y[][], int color) {
+    private int CheckForSaturation(double[][] x, double y[][], int color) {
         // Check if values are saturated and remove them from computations!
         // We do this for the first and last patch if more than 2 patches are
         // used.
@@ -340,14 +345,8 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         return nrPts;
     }
 
-    private static void PrintArray(String text, int[] array) {
-        IJ.write(text);
-        for (int i = 0; i < array.length; i++) {
-            IJ.write(Integer.toString(array[i]));
-        }
-    }
 
-    private static void SaveLUTs(int[][] LUTs) {
+    private void SaveLUTs(int[][] LUTs) {
         // Save LUT in text file
         FileDialog fd = new FileDialog(new Frame(), "Save LUT (.dat)", FileDialog.SAVE);
         fd.setVisible(true);
@@ -378,7 +377,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         }
     }
 
-    private static int[][] LoadLUTs() {
+    private int[][] LoadLUTs() {
         FileDialog fd = new FileDialog(new Frame(), "Choose LUT (.dat)", FileDialog.LOAD);
         fd.setVisible(true);
         if (fd.getFile() == null) {
