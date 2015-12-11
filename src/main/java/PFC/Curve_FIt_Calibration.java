@@ -15,14 +15,12 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
-import com.sun.tools.javah.resources.l10n;
 
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
-import ij.gui.PlotWindow;
-import ij.gui.Roi;
+import ij.gui.Roi; 
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 
@@ -436,7 +434,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         new ImageJ();
 
         // // open the Clown sample
-        ImagePlus image = IJ.openImage("/home/fulva/imagej/resource/IMG_0433.JPG");
+        ImagePlus image = IJ.openImage("/home/fulva/works/java/imagej/resource/5s/01_5s.JPG");
         image.show();
         //
         // // run the plugin
