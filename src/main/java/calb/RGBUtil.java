@@ -1,9 +1,34 @@
-package PFC;
+package calb;
 
 public class RGBUtil {
-	//data: rgb of all pixels get from imagej
-	  //x: insterest point position
-	  //windowSize:  ?? what
+	/**
+	 * accept diagnol coordinates, from top-left to bottom-right
+	 *  return array with all RGBs of the chart
+	 * */
+    public static double[][] getCCRGBs(int[] imageData, int x0, int y0, int x1, int y1, int imageWidth,  int imageHeight) {
+        int chartColNum = Config.CCCol;
+        int chartRowNum = Config.CCRow;
+        double[][] chartMeasurements = new double[chartColNum * chartRowNum][];
+        double deltaX = (x1 - x0) / (chartColNum - 1);
+        double deltaY = (y1 - y0) / (chartRowNum - 1);
+        double[] rgb;
+        for (int i = 0; i < chartRowNum; i++) {
+            int y = (int) Math.round(y0 + deltaY * i);
+            for (int j = 0; j < chartColNum; j++) {
+                int x = (int) Math.round(x0 + deltaX * j);
+                rgb = RGBUtil.GetAvgRGB(imageData, x, y, 17, imageWidth, imageHeight);
+                chartMeasurements[i * 6 + j] = rgb;
+            }
+        }
+        return chartMeasurements;
+    }
+	
+	
+	/**
+	 * data: rgb of all pixels get from imagej
+	 * x: insterest point position
+	 * windowSize:  size of single small chart
+	 * */
 	  public static double[] GetAvgRGB(int[] data, int x, int y, int windowSize, int imageWidth, int imageHeight) {
 	    double[] rgb = new double[3];
 	    int[] rgbTemp = new int[3];

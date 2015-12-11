@@ -107,7 +107,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         for (int y = 0; y < h; y++) {
             IJ.showProgress(y, h);
             for (int x = 0; x < w; x++) {
-                Util.DecodeRGB(imagePixels[index], tempRGB);
+                CIFE.Util.DecodeRGB(imagePixels[index], tempRGB);
                 int r = rgbMinMaxFilter(LUTs[0][tempRGB[0]]);
                 int g = rgbMinMaxFilter(LUTs[1][tempRGB[1]]);
                 int b = rgbMinMaxFilter(LUTs[2][tempRGB[2]]);
