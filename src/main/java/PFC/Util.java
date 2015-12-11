@@ -12,7 +12,7 @@ package PFC;
  */
 public class Util {
 
-  //data: rgb of all pixels
+  //data: rgb of all pixels get from imagej
   //x: insterest point position
   //windowSize:  ?? what
   public static double[] GetAvgRGB(int[] data, int x, int y, int windowSize, int imageWidth, int imageHeight) {
@@ -88,14 +88,6 @@ public class Util {
   
   //calculate your chart rgb
   public static void main(String[] args) {
-      double[][] rgb = {{50, 50, 50}, {100, 100, 100}, {143, 143, 142}, {200, 200, 200}, {230, 230, 230}, {252, 252, 252}};
-      for (int i = 0; i < rgb.length; i++) {
-          InverseGammaCorrection(rgb[i], rgb[i]);
-          System.out.println("point " + i + " : ");
-          for (double val : rgb[i]) {
-              System.out.println(val);
-          }
-      }
-      
-}
+	  System.out.println(GammaCorrection( InverseGammaCorrection(100)));
+  }
 }

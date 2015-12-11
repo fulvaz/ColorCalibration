@@ -14,8 +14,8 @@ import java.io.IOException;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
+  
 
-import com.sun.tools.javah.resources.l10n;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -39,7 +39,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
             {115, 82, 69}, {204, 161, 141}, {101, 134, 179}, {89, 109, 62}, {141, 137, 194}, {132, 228, 208}, 
             {249, 118, 35}, {80, 91, 182}, {222, 91, 125}, {91, 63, 123}, {173, 232, 91}, {255, 164, 26}, 
             {44, 56, 142}, {74, 148, 81}, {179, 42, 50}, {250, 226, 21}, {191, 81, 160}, {6, 142, 172}, 
-            {252, 252, 252}, {230, 230, 230}, {200, 200, 200}, {143, 143, 143}, {100, 100, 100}, {50, 50, 50}
+            {252, 252, 252}, {230, 230, 230}, {200, 200, 200}, {143, 143, 143}, {90, 90, 90}, {40, 40, 40}
     };
 
     public int setup(String arg, ImagePlus imp) {
@@ -54,16 +54,23 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         int[] imagePixels = (int[]) ip.getPixels();
 
         Roi roi = imp.getRoi();
-        Polygon poly = null;
+        Polygon poly;
         poly = roi.getPolygon(); // TODO Needs If statement
 
-        double[][] allChartValues = measureAllChartColor(imagePixels, poly.xpoints[1], poly.ypoints[0],
+        double[][] CCRGBs = getCCRGBs(imagePixels, poly.xpoints[1], poly.ypoints[0],
                 poly.xpoints[0], poly.ypoints[1], w, h);
-        WeightedObservedPoints[] rgbFitPoints = initPoints(allChartValues); //0 1 2 : R G B
+        WeightedObservedPoints[] rgbFitPoints = initPoints(CCRGBs); //0 1 2 : R G B
         double[] RCoefficients = curveFit(rgbFitPoints[0]);
         double[] GCoefficients = curveFit(rgbFitPoints[1]);
         double[] BCoefficients = curveFit(rgbFitPoints[2]);
 
+        for (int i = 0; i < CCRGBs.length; i++) {
+            for (int j = 0; j < CCRGBs[i].length; j++) {
+                System.out.print(CCRGBs[i][j] + " ");
+            }
+            System.out.println(" ");
+        }
+        
         LUTs[0] = calculateLUT(RCoefficients); //0 1 2 : R G B
         LUTs[1] = calculateLUT(GCoefficients);
         LUTs[2] = calculateLUT(BCoefficients);
@@ -74,9 +81,9 @@ public class Curve_FIt_Calibration implements PlugInFilter {
             double[] measureRX = new double[24], measureGX = new double[24], measureBX = new double[24]; 
             double[] chartRY = new double[24], chartGY = new double[24], chartBY = new double[24];
             for (int i = 0; i < 24; i++) {
-                measureRX[i] = allChartValues[i][0];
-                measureGX[i] = allChartValues[i][1];
-                measureBX[i] = allChartValues[i][2];
+                measureRX[i] = CCRGBs[i][0];
+                measureGX[i] = CCRGBs[i][1];
+                measureBX[i] = CCRGBs[i][2];
                 chartRY[i] = ChartRGBs[i][0];
                 chartGY[i] = ChartRGBs[i][1];
                 chartBY[i] = ChartRGBs[i][2];
@@ -114,12 +121,12 @@ public class Curve_FIt_Calibration implements PlugInFilter {
 
         //show calibration result
         System.out.println("here is the calibration result");
-        allChartValues = measureAllChartColor(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0],
+        CCRGBs = getCCRGBs(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0],
                 poly.ypoints[1], w, h);
-        for (int i = 0; i < allChartValues.length; i++) {
+        for (int i = 0; i < CCRGBs.length; i++) {
             System.out.println("no " + (i + 1));
-            for (int j = 0; j < allChartValues[i].length; j++) {
-                System.out.print(allChartValues[i][j] + " ");
+            for (int j = 0; j < CCRGBs[i].length; j++) {
+                System.out.print(CCRGBs[i][j] + " ");
             }
             System.out.println(" ");
         }
@@ -289,7 +296,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
     // return array with all RGBs of the chart
     // ps: MeasureGreyChartsValue() returns values after inverse gamma
     // correction, this mothod returns RGBs
-    public double[][] measureAllChartColor(int[] imageData, int x0, int y0, int x1, int y1, int imageWidth,
+    public double[][] getCCRGBs(int[] imageData, int x0, int y0, int x1, int y1, int imageWidth,
             int imageHeight) {
         int chartColNum = 6;
         int chartRowNum = 4;
@@ -436,7 +443,7 @@ public class Curve_FIt_Calibration implements PlugInFilter {
         new ImageJ();
 
         // // open the Clown sample
-        ImagePlus image = IJ.openImage("/home/fulva/imagej/resource/IMG_0433.JPG");
+        ImagePlus image = IJ.openImage("/home/fulva/works/java/imagej/resource/5s/01_5s.JPG");
         image.show();
         //
         // // run the plugin
