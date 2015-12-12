@@ -128,15 +128,45 @@ public class Calb_Plugin  implements PlugInFilter {
         imp.repaintWindow(); 
 
         //show calibration result
-        CCRGBs = RGBUtil.getCCRGBs(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0], poly.ypoints[1], w, h);
-        System.out.println("Calibration Result");
-        for (int i = 0; i < CCRGBs.length; i++) {
-            System.out.println("no " + (i + 1));
-            for (int j = 0; j < CCRGBs[i].length; j++) {
-                System.out.print(CCRGBs[i][j] + " ");
-            }
-            System.out.println(" ");
+//        CCRGBs = RGBUtil.getCCRGBs(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0], poly.ypoints[1], w, h);
+//        System.out.println("Calibration Result");
+//        for (int i = 0; i < CCRGBs.length; i++) {
+//            System.out.println("no " + (i + 1));
+//            for (int j = 0; j < CCRGBs[i].length; j++) {
+//                System.out.print(CCRGBs[i][j] + " ");
+//            }
+//            System.out.println(" ");
+//        }
+        
+        //show error
+        double maxErr = 0;
+        double minErr = 0;
+        double avgErr = 0;
+        double totleErr = 0;
+        for (int i = 0; i < Config.targetRGBs.length; i++) {
+        		double err = 
+	        		Math.pow(CCRGBs[i][0] - Config.targetRGBs[i][0], 2) + 
+	        		Math.pow(CCRGBs[i][1] - Config.targetRGBs[i][1], 2) + 
+	        		Math.pow(CCRGBs[i][2] - Config.targetRGBs[i][2], 2);
+        		if (i == 0) {
+        			maxErr = err;
+        			minErr = err;
+        		}
+        		totleErr += err;
+        		if (err > maxErr) {
+        			maxErr = err;
+        		}
+        		if (err < minErr) {
+        			minErr = err;
+        		}
+        		totleErr += err;
         }
+        avgErr = totleErr / Config.targetRGBs.length;
+      System.out.println("Calibration result");
+      System.out.println("avg error: " + avgErr);
+      System.out.println("max error: " + maxErr);
+      System.out.println("min error: " + minErr);
+        
 	}
 	@Override
 	public int setup(String arg0, ImagePlus imp) {
