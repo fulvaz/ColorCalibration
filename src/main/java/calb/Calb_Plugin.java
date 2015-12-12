@@ -145,9 +145,9 @@ public class Calb_Plugin  implements PlugInFilter {
         double totleErr = 0;
         for (int i = 0; i < Config.targetRGBs.length; i++) {
         		double err = 
-	        		Math.pow(CCRGBs[i][0] - Config.targetRGBs[i][0], 2) + 
-	        		Math.pow(CCRGBs[i][1] - Config.targetRGBs[i][1], 2) + 
-	        		Math.pow(CCRGBs[i][2] - Config.targetRGBs[i][2], 2);
+	        		Math.pow((CCRGBs[i][0] - Config.targetRGBs[i][0]), 2) + 
+	        		Math.pow((CCRGBs[i][1] - Config.targetRGBs[i][1]), 2) + 
+	        		Math.pow((CCRGBs[i][2] - Config.targetRGBs[i][2]), 2);
         		if (i == 0) {
         			maxErr = err;
         			minErr = err;
@@ -196,10 +196,10 @@ public class Calb_Plugin  implements PlugInFilter {
         new ImageJ();
 
         // // open the sample
-        ImagePlus image = IJ.openImage("/home/fulva/works/java/imagej/resource/5s/01_5s2.JPG");
-        image.show();
+//        ImagePlus image = IJ.openImage("/home/fulva/works/java/imagej/resource/5s/01_5s2.JPG");
+//        image.show();
         //
-        // // run the plugin
-        // IJ.runPlugIn(clazz.getName(), "");
+         // run the plugin
+         //IJ.runPlugIn(clazz.getName(), "");
     }
 }

@@ -274,6 +274,10 @@ public class White_Balance2 implements PlugInFilter {
     return LUTs;
   }
 
+  /**
+   * param x measure chart
+   * param y target chart
+   * */
   private static int CheckForSaturation(double[][] x, double y[][], int color) {
     // Check if values are saturated and remove them from computations!
     // We do this for the first and last patch if more than 2 patches are used.
