@@ -87,14 +87,9 @@ public class Util {
   
   //calculate your chart rgb
   public static void main(String[] args) {
-      double[][] rgb = {{50, 50, 50}, {100, 100, 100}, {143, 143, 142}, {200, 200, 200}, {230, 230, 230}, {252, 252, 252}};
-      for (int i = 0; i < rgb.length; i++) {
-          InverseGammaCorrection(rgb[i], rgb[i]);
-          System.out.println("point " + i + " : ");
-          for (double val : rgb[i]) {
-              System.out.println(val);
-          }
-      }
-      
+	  int rgb = (int) (Util.InverseGammaCorrection(200/255.0)*255);
+	  System.out.println("inversed " + rgb);
+	  rgb = (int)(Util.GammaCorrection(rgb/255.0)*255);
+	  System.out.println("gammaed " + rgb);
 }
 }

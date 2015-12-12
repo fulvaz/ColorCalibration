@@ -34,6 +34,14 @@ public class Calb_Plugin  implements PlugInFilter {
 
         
         double[][] CCRGBs = RGBUtil.getCCRGBs(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0], poly.ypoints[1], w, h);
+        System.out.println("Original chart");
+        for (int i = 0; i < CCRGBs.length; i++) {
+        	System.out.print("{");
+            for (int j = 0; j < CCRGBs[i].length; j++) {
+                System.out.print(", " + ((int)CCRGBs[i][j]));
+            }
+            System.out.println("},");
+        }
         //col:  {1, R, G, B, RG, RB, BG, R^2, G^2, B^2 }
         //我知道空间相邻性
         double[][] vArray = new double[10][24];
