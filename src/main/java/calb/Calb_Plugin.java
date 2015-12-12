@@ -86,20 +86,20 @@ public class Calb_Plugin  implements PlugInFilter {
         for (int j = 0; j < h; j++) {
             for (int i = 0; i < w; i++) {
                 RGBUtil.DecodeRGB(imagePixels[index], tempRGB);
-                imgv.put(0, i, 1);
-                imgv.put(1, i, tempRGB[0]);
-                imgv.put(2, i, tempRGB[1]);
-                imgv.put(3, i, tempRGB[2]);
-                imgv.put(4, i, tempRGB[0] * tempRGB[1]);
-                imgv.put(5, i, tempRGB[0] * tempRGB[2]);
-                imgv.put(6, i, tempRGB[1] * tempRGB[2]);
-                imgv.put(7, i, tempRGB[0] * tempRGB[0]);
-                imgv.put(8, i, tempRGB[1] * tempRGB[1]);
-                imgv.put(9, i, tempRGB[2] * tempRGB[2]);
+                imgv.put(0, index, 1);
+                imgv.put(1, index, tempRGB[0]);
+                imgv.put(2, index, tempRGB[1]);
+                imgv.put(3, index, tempRGB[2]);
+                imgv.put(4, index, tempRGB[0] * tempRGB[1]);
+                imgv.put(5, index, tempRGB[0] * tempRGB[2]);
+                imgv.put(6, index, tempRGB[1] * tempRGB[2]);
+                imgv.put(7, index, tempRGB[0] * tempRGB[0]);
+                imgv.put(8, index, tempRGB[1] * tempRGB[1]);
+                imgv.put(9, index, tempRGB[2] * tempRGB[2]);
                 index++;
             }
         }
-
+        
         
         DoubleMatrix tarxT = aT.mmul(imgv).transpose();
         
@@ -126,7 +126,7 @@ public class Calb_Plugin  implements PlugInFilter {
 	@Override
 	public int setup(String arg0, ImagePlus imp) {
         this.imp = imp;
-        return DOES_RGB;
+        return DOES_ALL;
 	}
 
     public static void main(String[] args) {
@@ -140,7 +140,7 @@ public class Calb_Plugin  implements PlugInFilter {
         new ImageJ();
 
         // // open the sample
-        ImagePlus image = IJ.openImage("/home/fulva/works/java/imagej/resource/5s/01_5s.JPG");
+        ImagePlus image = IJ.openImage("/home/fulva/works/java/imagej/resource/5s/01_5s2.JPG");
         image.show();
         //
         // // run the plugin
