@@ -67,4 +67,28 @@ public class RGBUtil {
 	      gammaRGB[1] = (rawRGB >> 8) & 0xff;
 	      gammaRGB[2] = rawRGB & 0xff;
 	  }
+	  
+	public static double GammaCorrection(double sIn) {
+		if (sIn > 0.018) {
+			if (sIn >= 1.0) {
+				return 1.0;
+			} else {
+				return 1.099 * (Math.pow(sIn, 0.45)) - 0.099;
+			}
+		} else {
+			if (sIn < 0.0) {
+				return 0.0;
+			} else {
+				return 4.5 * sIn;
+			}
+		}
+	}
+
+	public static double InverseGammaCorrection(double sIn) {
+		if (sIn <= 0.081) {
+			return sIn / 4.5;
+		} else {
+			return Math.pow(((sIn + 0.099) / 1.099), 2.22222222);
+		}
+	}
 }

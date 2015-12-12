@@ -8,7 +8,7 @@ import org.jblas.DoubleMatrix;
 
 import org.jblas.Solve;
 
-
+import CIFE.Util;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -34,14 +34,16 @@ public class Calb_Plugin  implements PlugInFilter {
 
         
         double[][] CCRGBs = RGBUtil.getCCRGBs(imagePixels, poly.xpoints[1], poly.ypoints[0], poly.xpoints[0], poly.ypoints[1], w, h);
-        System.out.println("Original chart");
-        for (int i = 0; i < CCRGBs.length; i++) {
-        	System.out.print("{");
-            for (int j = 0; j < CCRGBs[i].length; j++) {
-                System.out.print(", " + ((int)CCRGBs[i][j]));
-            }
-            System.out.println("},");
+        //feature scaling
+        for (int i = 0; i < 24; i++) {
+        	for (int j = 0; j < 3; j++) {
+        		CCRGBs[i][j] = RGBUtil.InverseGammaCorrection(CCRGBs[i][j] / 255.0);
+        	}
         }
+        
+
+        
+        
         //col:  {1, R, G, B, RG, RB, BG, R^2, G^2, B^2 }
         //我知道空间相邻性
         double[][] vArray = new double[10][24];
@@ -62,6 +64,8 @@ public class Calb_Plugin  implements PlugInFilter {
         //G01  G2..... G0i 
         //B01  B02..... B0i 
         double[][] xArray = new double [3][24];
+        
+
         for(int i = 0; i < 3; i++) {
         	for (int j = 0; j < 24; j++) {
         		xArray[i][j] = Config.targetRGBs[j][i];
@@ -89,32 +93,35 @@ public class Calb_Plugin  implements PlugInFilter {
       
         //准备数组
         int[]tempRGB = new int[3];
-        int index = 0;
+        double[]dtempRGB = new double[3];
+
         //HashMap<Integer, Integer> buffer = new HashMap<Integer, Integer>(60000);
-        for (int j = 0; j < h; j++) {
-            for (int i = 0; i < w; i++) {
-                RGBUtil.DecodeRGB(imagePixels[index], tempRGB);
-                imgv.put(0, index, 1);
-                imgv.put(1, index, tempRGB[0]);
-                imgv.put(2, index, tempRGB[1]);
-                imgv.put(3, index, tempRGB[2]);
-                imgv.put(4, index, tempRGB[0] * tempRGB[1]);
-                imgv.put(5, index, tempRGB[0] * tempRGB[2]);
-                imgv.put(6, index, tempRGB[1] * tempRGB[2]);
-                imgv.put(7, index, tempRGB[0] * tempRGB[0]);
-                imgv.put(8, index, tempRGB[1] * tempRGB[1]);
-                imgv.put(9, index, tempRGB[2] * tempRGB[2]);
-                index++;
-            }
-        }
+		for (int i = 0; i < (w * h); i++) {
+			RGBUtil.DecodeRGB(imagePixels[i], tempRGB);
+			for (int j = 0; j < 3; j++) {
+				dtempRGB[j] = RGBUtil.InverseGammaCorrection(tempRGB[j] / 255.0);
+			}
+			imgv.put(0, i, 1);
+			imgv.put(1, i, dtempRGB[0]);
+			imgv.put(2, i, dtempRGB[1]);
+			imgv.put(3, i, dtempRGB[2]);
+			imgv.put(4, i, dtempRGB[0] * dtempRGB[1]);
+			imgv.put(5, i, dtempRGB[0] * dtempRGB[2]);
+			imgv.put(6, i, dtempRGB[1] * dtempRGB[2]);
+			imgv.put(7, i, dtempRGB[0] * dtempRGB[0]);
+			imgv.put(8, i, dtempRGB[1] * dtempRGB[1]);
+			imgv.put(9, i, dtempRGB[2] * dtempRGB[2]);
+			ij.IJ.showProgress(i, w * h);
+		}
+		
         
         
         DoubleMatrix tarxT = aT.mmul(imgv).transpose();
         
         for (int i = 0; i < tarxT.rows; i++) {
-        	int r = (int)tarxT.get(i, 0);
-        	int g = (int)tarxT.get(i, 1);
-        	int b = (int)tarxT.get(i, 2);
+        	int r = (int)(Util.GammaCorrection(tarxT.get(i, 0)) * 255);
+        	int g = (int)(Util.GammaCorrection(tarxT.get(i, 1)) * 255);
+        	int b = (int)(Util.GammaCorrection(tarxT.get(i, 2)) * 255);
         	imagePixels[i] = (r << 16) + (g << 8) + b;
         }
 
@@ -133,6 +140,7 @@ public class Calb_Plugin  implements PlugInFilter {
 	}
 	@Override
 	public int setup(String arg0, ImagePlus imp) {
+        //inverse gamma correction
         this.imp = imp;
         return DOES_ALL;
 	}
@@ -143,6 +151,16 @@ public class Calb_Plugin  implements PlugInFilter {
         String pluginsDir = url.substring(5, url.length() - clazz.getName().length() - 6);
         System.out.println(pluginsDir);
         System.setProperty("plugins.dir", pluginsDir);
+        
+        //debug purpose
+//        System.out.println("Original chart");
+//        for (int i = 0; i < 24; i++) {
+//        	System.out.print("{");
+//            for (int j = 0; j < 3; j++) {
+//                System.out.print(", " + Config.targetRGBs[i][j]);
+//            }
+//            System.out.println("},");
+//        }
 
         // start ImageJ
         new ImageJ();
