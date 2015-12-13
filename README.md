@@ -24,7 +24,13 @@ not working if your image:
 
 How to use
 ---
-import with Maven and enjoy.
+1. import with Maven.
+2. run
+3. an imageJ window show up
+4. use the line tool, draw a line in the colorchart, which starts at the top-right and ends at the bottom-left.
+5. wait,
+6. get the result
+
 
 Inspired By
 ---
