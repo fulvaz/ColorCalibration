@@ -8,7 +8,7 @@ import org.jblas.DoubleMatrix;
 
 import org.jblas.Solve;
 
-import CIFE.Util;
+
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -40,9 +40,6 @@ public class Calb_Plugin  implements PlugInFilter {
         		CCRGBs[i][j] = RGBUtil.InverseGammaCorrection(CCRGBs[i][j] / 255.0);
         	}
         }
-        
-
-        
         
         //col:  {1, R, G, B, RG, RB, BG, R^2, G^2, B^2 }
         //我知道空间相邻性
@@ -119,9 +116,9 @@ public class Calb_Plugin  implements PlugInFilter {
         DoubleMatrix tarxT = aT.mmul(imgv).transpose();
         
         for (int i = 0; i < tarxT.rows; i++) {
-        	int r = (int)(Util.GammaCorrection(tarxT.get(i, 0)) * 255);
-        	int g = (int)(Util.GammaCorrection(tarxT.get(i, 1)) * 255);
-        	int b = (int)(Util.GammaCorrection(tarxT.get(i, 2)) * 255);
+        	int r = (int)(RGBUtil.GammaCorrection(tarxT.get(i, 0)) * 255);
+        	int g = (int)(RGBUtil.GammaCorrection(tarxT.get(i, 1)) * 255);
+        	int b = (int)(RGBUtil.GammaCorrection(tarxT.get(i, 2)) * 255);
         	imagePixels[i] = (r << 16) + (g << 8) + b;
         	ij.IJ.showProgress(i, tarxT.rows);
         }
