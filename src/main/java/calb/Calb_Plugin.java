@@ -123,6 +123,7 @@ public class Calb_Plugin  implements PlugInFilter {
         	int g = (int)(Util.GammaCorrection(tarxT.get(i, 1)) * 255);
         	int b = (int)(Util.GammaCorrection(tarxT.get(i, 2)) * 255);
         	imagePixels[i] = (r << 16) + (g << 8) + b;
+        	ij.IJ.showProgress(i, tarxT.rows);
         }
 
         imp.repaintWindow(); 
@@ -139,33 +140,22 @@ public class Calb_Plugin  implements PlugInFilter {
 //        }
         
         //show error
-        double maxErr = 0;
-        double minErr = 0;
-        double avgErr = 0;
-        double totleErr = 0;
-        for (int i = 0; i < Config.targetRGBs.length; i++) {
-        		double err = 
-	        		Math.pow((CCRGBs[i][0] - Config.targetRGBs[i][0]), 2) + 
-	        		Math.pow((CCRGBs[i][1] - Config.targetRGBs[i][1]), 2) + 
-	        		Math.pow((CCRGBs[i][2] - Config.targetRGBs[i][2]), 2);
-        		if (i == 0) {
-        			maxErr = err;
-        			minErr = err;
-        		}
-        		totleErr += err;
-        		if (err > maxErr) {
-        			maxErr = err;
-        		}
-        		if (err < minErr) {
-        			minErr = err;
-        		}
-        		totleErr += err;
-        }
-        avgErr = totleErr / Config.targetRGBs.length;
-      System.out.println("Calibration result");
-      System.out.println("avg error: " + avgErr);
-      System.out.println("max error: " + maxErr);
-      System.out.println("min error: " + minErr);
+		ColorSpaceConverter con = new ColorSpaceConverter();
+		double[][] targetLab = new double[CCRGBs.length][];
+		double[][] CCLab = new double[CCRGBs.length][];
+		double totleErr = 0;
+		
+		for (int i = 0; i < CCRGBs.length; i++) {
+			targetLab[i] = con.RGBtoLAB(Config.RGBsNG[i]);
+			CCLab[i] = con.RGBtoLAB(RGBUtil.GammaCorrection(CCRGBs[i]));
+			double temp = 0;
+			for (int j = 1; j < 3; j++) {
+				temp += Math.pow(targetLab[i][j] - CCLab[i][j], 2);
+			}
+			totleErr += Math.sqrt(temp);
+		}
+		
+		System.out.println("ΔE: " + totleErr / CCRGBs.length);
         
 	}
 	@Override

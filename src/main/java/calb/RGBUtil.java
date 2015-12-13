@@ -83,6 +83,14 @@ public class RGBUtil {
 			}
 		}
 	}
+	
+	public static int[] GammaCorrection(double[] sIn) {
+		int[] sOut = new int[sIn.length];
+		for (int i = 0; i < sIn.length; i++) {
+			sOut[i] = (int)(GammaCorrection(sIn[i]) * 255.0);
+		}
+		return sOut;
+	}
 
 	public static double InverseGammaCorrection(double sIn) {
 		if (sIn <= 0.081) {
@@ -90,5 +98,13 @@ public class RGBUtil {
 		} else {
 			return Math.pow(((sIn + 0.099) / 1.099), 2.22222222);
 		}
+	}
+	
+	public static double[] InverseGammaCorrection(double[] sIn) {
+		double[] sOut = new double[sIn.length];
+		for (int i = 0; i < sIn.length; i++) {
+			sOut[i] = InverseGammaCorrection(sIn[i]);
+		}
+		return sOut;
 	}
 }
