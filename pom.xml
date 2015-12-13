@@ -12,8 +12,7 @@
 		<relativePath />
 	</parent>
 
-	<groupId>sc.fiji</groupId>
-	<artifactId>Process_Pixels</artifactId>
+	<groupId>fulvaz</groupId>
 	<version>0.1.0-SNAPSHOT</version>
 
 	<name>plugins/Process_Pixels.jar</name>
@@ -36,10 +35,10 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/minimal-ij1-plugin</connection>
-		<developerConnection>scm:git:git@github.com:imagej/minimal-ij1-plugin</developerConnection>
+		<connection>scm:git:git://github.com/fulvaz/ColorCalibration</connection>
+		<developerConnection>scm:git:git@github.com:fulvaz/ColorCalibration.git</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/imagej/minimal-ij1-plugin</url>
+		<url>https://github.com/fulvaz/ColorCalibration</url>
 	</scm>
 
 	<properties>
@@ -84,4 +83,5 @@
 		</plugins>
 	</build>
 
+	<artifactId>ColorChartCalibration</artifactId>
 </project>
