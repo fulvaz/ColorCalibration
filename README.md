@@ -42,4 +42,6 @@ Other
 if you need more informaitions about the implementations and algorigm, plz visit
 Calibrate with ColorChart(Chinese)
 
+http://fulvaz.leanote.com/post/github-readme
+
 this project is still underdevelopment, feel free to **STAR ME** XD
