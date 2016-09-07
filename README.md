@@ -6,10 +6,10 @@ use inverse gamma regression
 Result:
 ----
 * orginal
-![](leanote://file/getImage?fileId=566cf45a579d3c4ea3000000)
+![](https://leanote.com/api/file/getImage?fileId=566cf776ab6441660a0008a0)
 
 * calibtrated
-![](leanote://file/getImage?fileId=566cf49a579d3c4ea3000001)
+![](https://leanote.com/api/file/getImage?fileId=566cf776ab6441660a00089f)
 
 
 Problems:
